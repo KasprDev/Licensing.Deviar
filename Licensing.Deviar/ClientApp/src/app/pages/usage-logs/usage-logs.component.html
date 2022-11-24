@@ -1,0 +1,14 @@
+<nz-table #licenseTable [nzData]="logs">
+  <thead>
+    <tr>
+      <th>Action Time</th>
+      <th>Note</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of licenseTable.data">
+      <td>{{data.actionTime | date }}</td>
+      <td>{{data.note}}</td>
+    </tr>
+  </tbody>
+</nz-table>

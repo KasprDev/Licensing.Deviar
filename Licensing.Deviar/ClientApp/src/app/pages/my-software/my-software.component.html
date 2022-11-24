@@ -1,0 +1,46 @@
+<h2>My Software</h2>
+<nz-divider></nz-divider>
+
+<button nz-button nzType="primary" (click)="createSoftware = true">Create New</button> <br />
+
+<nz-table #softwareTable [nzData]="software">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>License Keys</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of softwareTable.data">
+      <td>{{data.name}}</td>
+      <td>{{data.description}}</td>
+      <td>{{data.licenses}}</td>
+      <td>
+        <a (click)="selectSoftware(data)">Create License</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a [routerLink]="data.id">View</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a style="color: red;">Delete</a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+
+<nz-modal [(nzVisible)]="createSoftware" nzTitle="Create Software" (nzOnCancel)="createSoftware = false" (nzOnOk)="addSoftware()">
+  <ng-container *nzModalContent>
+    <label>Software Name</label>
+    <input type="text" nz-input [(ngModel)]="newSoftware.name" /> <br />
+    <label>Description</label>
+    <textarea nz-input [(ngModel)]="newSoftware.description"></textarea>
+  </ng-container>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="createLicense" nzTitle="Create New License Key" (nzOnCancel)="createLicense = false" (nzOnOk)="addLicense()">
+  <ng-container *nzModalContent>
+    <label>Expiration Date</label> <br />
+    <nz-date-picker [(ngModel)]="newLicense.expiresOn" [nzFormat]="'MM/dd/yyyy'"></nz-date-picker>
+  </ng-container>
+</nz-modal>
+

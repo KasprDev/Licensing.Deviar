@@ -1,0 +1,50 @@
+<label>Name</label>
+<input type="text" nz-input [(ngModel)]="software.name" /> <br /> <br />
+<label>Description</label>
+<textarea nz-input rows="4" [(ngModel)]="software.description"></textarea> <br />
+
+<div class="button-container">
+  <button nz-button nzType="primary" (click)="saveChanges()">Save Changes</button> <br />
+</div>
+<div class="clear"></div><br />
+
+<nz-table #licenseTable [nzData]="software.licenseKeys">
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Created</th>
+      <th>Expiration Date</th>
+      <th>Hardware ID</th>
+      <th>Last Used</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of licenseTable.data">
+      <td style="cursor: pointer;" [routerLink]="'/usage/' + data.key">{{data.key}}</td>
+      <td>{{data.createdOn | date }}</td>
+      <td>{{data.expiresOn | date }}</td>
+      <td>{{data.hardwareId}}</td>
+      <td>{{data.lastUsed | date }}</td>
+      <td>
+        <a style="color: red;" *ngIf="!data.locked" (click)="suspendLicense(data)">Suspend</a>
+        <a *ngIf="data.locked" (click)="suspendLicense(data)">Activate</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a style="color: red;" (click)="deleteLicense(data)">Delete</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a (click)="changeExpireDate(data)">Manage</a>
+        <div style="display: inline;" *ngIf="data.hardwareId != null">
+          <nz-divider nzType="vertical"></nz-divider>
+          <a (click)="unlockKey(data)">Unlock</a>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+
+<nz-modal [(nzVisible)]="editingLicense" nzTitle="Manage License" (nzOnCancel)="editingLicense = false" (nzOnOk)="editLicense()">
+  <ng-container *nzModalContent>
+    <label>Expiration Date</label> <br />
+    <nz-date-picker [(ngModel)]="selectedLicense.expiresOn" [nzFormat]="'MM/dd/yyyy'"></nz-date-picker>
+  </ng-container>
+</nz-modal>

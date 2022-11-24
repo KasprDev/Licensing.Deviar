@@ -1,0 +1,21 @@
+input, textarea {
+  width: 400px;
+}
+
+label {
+  display: block;
+  font-weight: 500;
+}
+
+.button-container {
+  width: 400px;
+  padding-top: 15px;
+}
+
+.button-container button {
+  float: right;
+}
+
+.clear {
+  clear: both;
+}
