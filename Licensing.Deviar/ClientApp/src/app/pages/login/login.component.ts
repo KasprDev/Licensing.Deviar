@@ -10,6 +10,7 @@ import { ApiService } from 'src/services/api.service';
 })
 export class LoginComponent implements OnInit {
   public user: any = {};
+  public loggingIn: boolean;
 
   constructor(private api: ApiService, private modal: NzModalService, private router: Router) { }
 
@@ -18,6 +19,7 @@ export class LoginComponent implements OnInit {
   }
 
   async login() {
+    this.loggingIn = true;
     await this.api.login(this.user).then((resp) => {
       localStorage.setItem('token', resp.token);
       this.router.navigate(['/software']);
@@ -28,5 +30,6 @@ export class LoginComponent implements OnInit {
         nzContent: error.data.message
       });
     });
+    this.loggingIn = false;
   }
 }

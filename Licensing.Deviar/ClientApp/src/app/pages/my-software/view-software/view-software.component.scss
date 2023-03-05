@@ -19,3 +19,32 @@ label {
 .clear {
   clear: both;
 }
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 400px;
+}
+
+.grid-2 input[type="text"] {
+  width: 100%;
+}
+
+@media only screen and (max-width: 768px) {
+  input, textarea {
+    width: 100%;
+  }
+
+  .grid-2 {
+    width: 100%;
+  }
+
+  .button-container {
+    width: 100%;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+  }
+}

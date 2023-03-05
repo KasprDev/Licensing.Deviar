@@ -1,6 +1,4 @@
-﻿using System.Net.WebSockets;
-using Humanizer;
-using Licensing.Deviar.Data;
+﻿using Licensing.Deviar.Data;
 using Licensing.Deviar.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -29,20 +27,18 @@ namespace Licensing.Deviar.Controllers
         [Route("unlock")]
         public async Task<IActionResult> UnlockLicense([FromBody] LicenseKeyDto dto)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
-            var license = _context.LicenseKeys.Include(x => x.Software).FirstOrDefault(x => x.Key == dto.Key && x.Software.UserId == user.Id);
+            var license = _context.LicenseKeys.Include(x => x.Software)
+                .FirstOrDefault(x => x.Key == dto.Key && x.Software.UserId == user!.Id);
 
             if (license == null)
-            {
                 return BadRequest();
-            }
 
             license.HardwareId = null;
             _context.LicenseKeys.Update(license);
 
-            await _context.SaveChangesAsync();
-
+            await _context.SaveChangesAsync().ConfigureAwait(false);
             return Ok();
         }
 
@@ -50,20 +46,17 @@ namespace Licensing.Deviar.Controllers
         [Route("edit")]
         public async Task<IActionResult> EditLicense([FromBody] LicenseKeyDto dto)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
-            var license = _context.LicenseKeys.Include(x => x.Software).FirstOrDefault(x => x.Key == dto.Key && x.Software.UserId == user.Id);
+            var license = _context.LicenseKeys.Include(x => x.Software)
+                .FirstOrDefault(x => x.Key == dto.Key && x.Software.UserId == user.Id);
 
             if (license == null)
-            {
                 return BadRequest();
-            }
 
             license.ExpiresOn = dto.ExpiresOn;
-
             _context.LicenseKeys.Update(license);
-
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return Ok();
         }
@@ -72,20 +65,15 @@ namespace Licensing.Deviar.Controllers
         [Route("suspend")]
         public async Task<IActionResult> SuspendLicense([FromBody] LicenseKeyDto dto)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-
+            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
             var license = _context.LicenseKeys.FirstOrDefault(x => x.Key == dto.Key);
 
             if (license == null)
-            {
                 return BadRequest();
-            }
 
             license.Locked = !license.Locked;
-
             _context.LicenseKeys.Update(license);
-
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return Ok();
         }
@@ -94,7 +82,7 @@ namespace Licensing.Deviar.Controllers
         [Route("create")]
         public async Task<IActionResult> CreateKey([FromBody] LicenseKeyDto dto)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
             if (!_context.Software.Any(x => x.Id == dto.SoftwareId))
             {
@@ -121,8 +109,7 @@ namespace Licensing.Deviar.Controllers
             };
 
             _context.LicenseKeys.Add(key);
-
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return Ok(new
             {
@@ -134,16 +121,15 @@ namespace Licensing.Deviar.Controllers
         [Route("usage/logs/{key}")]
         public async Task<IActionResult> GetUsageLogs(string key)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
             var l = _context.LicenseKeys.Include(x => x.Software).FirstOrDefault(x => x.Key == key);
 
             if (l == null)
-            {
                 return BadRequest();
-            }
 
-            var usage = _context.UsageLogs.Where(x => x.LicenseKey == key).OrderByDescending(x => x.ActionTime).Take(200);
+            var usage = _context.UsageLogs.Where(x => x.LicenseKey == key).OrderByDescending(x => x.ActionTime)
+                .Take(200);
 
             return Ok(usage.Select(x => new UsageLogDto()
             {
@@ -156,7 +142,7 @@ namespace Licensing.Deviar.Controllers
         [Route("delete")]
         public async Task<IActionResult> DeleteKey([FromBody] LicenseKeyDto dto)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
             var key = _context.LicenseKeys.Include(x => x.Software).FirstOrDefault(x => x.Key == dto.Key);
 
@@ -168,14 +154,11 @@ namespace Licensing.Deviar.Controllers
                 });
             }
 
-            if (key.Software.UserId != user.Id)
-            {
+            if (key.Software.UserId != user!.Id)
                 return Unauthorized();
-            }
 
             _context.LicenseKeys.Remove(key);
-
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync().ConfigureAwait(false);
 
             return Ok();
         }

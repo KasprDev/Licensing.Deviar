@@ -23,6 +23,23 @@ namespace Licensing.Deviar.Controllers
             _config = config;
         }
 
+        [HttpGet]
+        [Route("software/{id}")]
+        public IActionResult GetSoftwareInfo(int id)
+        {
+            var software = _context.Software.FirstOrDefault(x => x.Id == id);
+
+            if (software == null)
+                return BadRequest();
+
+            return Ok(new
+            {
+                software.Name,
+                software.Description,
+                software.Version
+            });
+        }
+
         [HttpPost]
         [Route("usage/log")]
         public async Task<IActionResult> LogUsage([FromBody] UsageLogDto dto)
@@ -51,80 +68,24 @@ namespace Licensing.Deviar.Controllers
             return Ok();
         }
 
-        [HttpGet]
-        [Route("selly/pay")]
-        public async Task<IActionResult> ValidateSellyPayment([FromBody] SellyPaymentDto dto)
-        {
-            // Instagram Bot
-            if (dto.product_id != "b22f4aa0") return BadRequest();
-
-            LicenseKey l = new LicenseKey()
-            {
-                ExpiresOn = DateTime.UtcNow.AddYears(1),
-                Email = dto.email,
-                Key = Guid.NewGuid().ToString(),
-                SoftwareId = Convert.ToInt32(_config["InstagramBotId"])
-            };
-
-            _context.LicenseKeys.Add(l);
-            await _context.SaveChangesAsync();
-
-            var client = new SendGridClient("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");
-            var from = new EmailAddress("licensing@deviar.net", "Deviar Licensing");
-            var to = new EmailAddress(dto.email, "");
-
-            var content = $"Your License Key: <b>{l.Key}</b>.";
-
-            var msg = MailHelper.CreateSingleEmail(from, to, $"Software License For \"{_context.Software.First(x => x.Id == Convert.ToInt32(_config["InstagramBotId"])).Name}\"", content, content);
-
-            var response = await client.SendEmailAsync(msg);
-
-            return Ok();
-        }
-
         [Route("license/validate")]
         public async Task<IActionResult> ValidateLicense([FromBody] ValidateLicenseDto dto)
         {
             var license = _context.LicenseKeys.Include(x => x.Software)
                 .FirstOrDefault(x => x.Key == dto.Key && x.SoftwareId == dto.SoftwareId);
 
-            if (license == null)
-            {
-                return BadRequest(new
-                {
-                    Message = "The specified license key does not exist."
-                });
-            }
+            if (license == null) return BadRequest(new { Message = "The specified license key does not exist." });
 
             if (license.Locked)
-            {
-                return BadRequest(new
-                {
-                    Message = "Your license key has been suspended. Please contact support."
-                });
-            }
+                return BadRequest(new { Message = "Your license key has been suspended. Please contact support." });
 
             if (license.HardwareId != null && license.HardwareId != dto.Fingerprint)
-            {
-                return BadRequest(new
-                {
-                    Message = "Registered hardware fingerprint mismatch."
-                });
-            }
+                return BadRequest(new { Message = "Registered hardware fingerprint mismatch." });
 
             if (license.ExpiresOn <= DateTime.UtcNow)
-            {
-                return BadRequest(new
-                {
-                    Message = "Your license has expired."
-                });
-            }
+                return BadRequest(new { Message = "Your license has expired." });
 
-            if (license.HardwareId == null)
-            {
-                license.HardwareId = dto.Fingerprint;
-            }
-
+            license.HardwareId ??= dto.Fingerprint;
             license.LastUsed = DateTime.UtcNow;
 
             var u = new UsageLog()
@@ -135,9 +96,7 @@ namespace Licensing.Deviar.Controllers
             };
 
             _context.UsageLogs.Add(u);
-
             _context.LicenseKeys.Update(license);
-
             await _context.SaveChangesAsync();
 
             return Ok();

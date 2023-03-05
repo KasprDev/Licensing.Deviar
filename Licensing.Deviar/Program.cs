@@ -1,5 +1,4 @@
 using System.Text;
-using Licensing.Deviar;
 using Licensing.Deviar.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -75,7 +74,7 @@ app.UseEndpoints(endpoints =>
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
-    app.UseSpa(spa => { spa.UseProxyToSpaDevelopmentServer("http://127.0.0.1:4200"); });
+    app.UseSpa(spa => { spa.UseProxyToSpaDevelopmentServer("http://localhost:4200"); });
 }
 else
 {

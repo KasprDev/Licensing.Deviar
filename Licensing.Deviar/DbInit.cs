@@ -18,7 +18,8 @@ namespace Licensing.Deviar
                 Email = "contact@deviar.net"
             };
 
-            var identity = await userMgr.CreateAsync(user, "Picturesque1@");
+            var identity =
+                await userMgr.CreateAsync(user, "u_h6-kUXVWHpKsizn9KbmiZii@9d9W.j9LmFru23UcY@QGW*xD@nf3M_kVzG");
 
             await context.SaveChangesAsync();
         }

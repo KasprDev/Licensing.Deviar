@@ -12,18 +12,15 @@ namespace Licensing.Deviar.Controllers
     public class TokenController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IUserClaimsPrincipalFactory<AppUser> _userClaimsPrinFactory;
 
         public TokenController(
             ApplicationDbContext context,
-            UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
             IUserClaimsPrincipalFactory<AppUser> userClaimsPrinFactory)
         {
             _context = context;
-            _userManager = userManager;
             _signInManager = signInManager;
             _userClaimsPrinFactory = userClaimsPrinFactory;
         }
@@ -60,7 +57,8 @@ namespace Licensing.Deviar.Controllers
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var stupidClaims = await _userClaimsPrinFactory.CreateAsync(matchingUser);
 
-            var claims = new List<Claim>(stupidClaims.Claims) { new Claim("securitystamp", matchingUser.SecurityStamp) };
+            var claims = new List<Claim>(stupidClaims.Claims)
+                { new Claim("securitystamp", matchingUser.SecurityStamp) };
 
             var token = new JwtSecurityToken(
                 issuer: "licensing.deviar.net",
@@ -74,7 +72,6 @@ namespace Licensing.Deviar.Controllers
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expires = token.ValidTo,
             });
-
         }
     }
 }

@@ -1,5 +1,19 @@
 <label>Name</label>
-<input type="text" nz-input [(ngModel)]="software.name" /> <br /> <br />
+<input type="text" nz-input [(ngModel)]="software.name" />
+<div style="padding: 5px;"></div>
+
+<div class="grid-2">
+  <div>
+    <label>Version</label>
+    <input type="text" nz-input [(ngModel)]="software.version" />
+  </div>
+  <div>
+    <label>Selly Product Id</label>
+    <input type="text" nz-input [(ngModel)]="software.sellyProductId" />
+  </div>
+</div>
+
+<div style="padding: 5px;"></div>
 <label>Description</label>
 <textarea nz-input rows="4" [(ngModel)]="software.description"></textarea> <br />
 
@@ -8,7 +22,7 @@
 </div>
 <div class="clear"></div><br />
 
-<nz-table #licenseTable [nzData]="software.licenseKeys">
+<nz-table #licenseTable [nzData]="software.licenseKeys" class="table-container">
   <thead>
     <tr>
       <th>Key</th>
@@ -21,7 +35,7 @@
   </thead>
   <tbody>
     <tr *ngFor="let data of licenseTable.data">
-      <td style="cursor: pointer;" [routerLink]="'/usage/' + data.key">{{data.key}}</td>
+      <td>{{data.key}}</td>
       <td>{{data.createdOn | date }}</td>
       <td>{{data.expiresOn | date }}</td>
       <td>{{data.hardwareId}}</td>
@@ -33,9 +47,11 @@
         <a style="color: red;" (click)="deleteLicense(data)">Delete</a>
         <nz-divider nzType="vertical"></nz-divider>
         <a (click)="changeExpireDate(data)">Manage</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a [routerLink]="'/usage/' + data.key">View Usage</a>
         <div style="display: inline;" *ngIf="data.hardwareId != null">
           <nz-divider nzType="vertical"></nz-divider>
-          <a (click)="unlockKey(data)">Unlock</a>
+          <a (click)="unlockKey(data)" style="color: rgb(172, 116, 12);">Unlock</a>
         </div>
       </td>
     </tr>

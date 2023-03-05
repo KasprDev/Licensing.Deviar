@@ -1,9 +1,9 @@
 <h2>My Software</h2>
 <nz-divider></nz-divider>
 
-<button nz-button nzType="primary" (click)="createSoftware = true">Create New</button> <br />
+<button nz-button nzType="primary" (click)="createSoftware = true">Create New</button> <br /> <br />
 
-<nz-table #softwareTable [nzData]="software">
+<nz-table #softwareTable [nzData]="software" class="table-container">
   <thead>
     <tr>
       <th>Name</th>
@@ -20,9 +20,7 @@
       <td>
         <a (click)="selectSoftware(data)">Create License</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a [routerLink]="data.id">View</a>
-        <nz-divider nzType="vertical"></nz-divider>
-        <a style="color: red;">Delete</a>
+        <a [routerLink]="'/software/' + data.id">View</a>
       </td>
     </tr>
   </tbody>

@@ -43,7 +43,8 @@ namespace Licensing.Deviar.Data
             };
 
             PasswordHasher<AppUser> passwordHasher = new PasswordHasher<AppUser>();
-            user.PasswordHash = passwordHasher.HashPassword(user, "Picturesque1@");
+            user.PasswordHash =
+                passwordHasher.HashPassword(user, "u_h6-kUXVWHpKsizn9KbmiZii@9d9W.j9LmFru23UcY@QGW*xD@nf3M_kVzG");
 
             builder.Entity<AppUser>().HasData(user);
         }

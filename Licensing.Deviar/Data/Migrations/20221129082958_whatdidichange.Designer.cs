@@ -4,6 +4,7 @@ using Licensing.Deviar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Licensing.Deviar.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221129082958_whatdidichange")]
+    partial class whatdidichange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,13 +93,13 @@ namespace Licensing.Deviar.Data.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7046c534-ac0e-4800-a6e9-ecfb5a2557da",
+                            ConcurrencyStamp = "054bfa61-64ab-4370-b380-41cd64d51709",
                             Email = "contact@deviar.net",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEJJ3U3sCK4jyRKoIvFdFU5Nd5WT1lRH8tTUZ3mgC+2ji0E3GfkS4lchTTFkjKsqbqg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEMWbaacvn+exZeXCgG3UlxsrTuXf41rUa39vyuQI0MprlWmBEXB3XSKoHf0A5h5Xdw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "dbc5df49-5ebd-49af-8995-23a051b35c3f",
+                            SecurityStamp = "a459b436-642c-4f4c-a052-a982e05c2d78",
                             TwoFactorEnabled = false,
                             UserName = "contact@deviar.net"
                         });
@@ -118,6 +120,7 @@ namespace Licensing.Deviar.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DeviceName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -130,6 +133,7 @@ namespace Licensing.Deviar.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IpAddress")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Key")
@@ -143,6 +147,7 @@ namespace Licensing.Deviar.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("MacAddress")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SoftwareId")
@@ -171,10 +176,6 @@ namespace Licensing.Deviar.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("SellyProductId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

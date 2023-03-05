@@ -2,4 +2,4 @@
 <nz-divider></nz-divider>
 <input type="text" nz-input [(ngModel)]="user.email" /> <br /> <br />
 <input type="password" nz-input [(ngModel)]="user.password" /> <br /> <br />
-<button nz-button nzType="primary" (click)="login()">Login</button>
+<button nz-button nzType="primary" (click)="login()" [nzLoading]="loggingIn">Login</button>
