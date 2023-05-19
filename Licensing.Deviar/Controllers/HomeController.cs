@@ -45,7 +45,7 @@ namespace Licensing.Deviar.Controllers
             var to = new EmailAddress(dto.email, dto.email);
             var subject = $"Software License Key for {product.Name}.";
             var htmlContent =
-                $"Thank you for purchasing {product.Name}! Your license key to activate the software is <b>{license.Key}</b>. <a href=\"https://discord.gg/h27pqgmnsv\">Join our Discord for the download link & support.</a>";
+                $"Thank you for purchasing {product.Name}! Your license key to activate the software is <b>{license.Key}</b>. <a href=\"https://discord.gg/kxeSdahKC3\">Join our Discord for the download link & support.</a>";
             var msg = MailHelper.CreateSingleEmail(from, to, subject, htmlContent, htmlContent);
             await client.SendEmailAsync(msg).ConfigureAwait(false);
 
