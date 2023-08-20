@@ -21,12 +21,8 @@ export class LoginComponent implements OnInit {
   async login() {
     this.loggingIn = true;
     await this.api.login(this.user).then((resp) => {
-      alert(resp.token);
       localStorage.setItem('token', resp.token);
-      alert(localStorage.getItem('token'));
-      setTimeout(() => {
       this.router.navigate(['/software']);
-      }, 500);
     })
     .catch(async (error) => {
       await this.modal.create({

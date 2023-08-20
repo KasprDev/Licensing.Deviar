@@ -47,7 +47,7 @@ namespace Licensing.Deviar.Controllers
             var signIn = await _signInManager.CheckPasswordSignInAsync(matchingUser, tokenRequest.Password, true);
 
             if (!signIn.Succeeded)
-                return Ok(new
+                return BadRequest(new
                 {
                     Message = "Invalid email address or password. Please try again."
                 });
