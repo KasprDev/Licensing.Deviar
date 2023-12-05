@@ -1,14 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-Licensing.Deviar-ACF492D8-8A8E-4A7A-A4AE-194EEB17961A</UserSecretsId>
   </PropertyGroup>
 
-  <Target Name="NgBuild" BeforeTargets="ComputeFilesToPublish">
+  <Target Name="NgBuild" BeforeTargets="PrepareForPublish">
     <Exec WorkingDirectory="$(ProjectDir)ClientApp" Command="ng build"></Exec>
+    <ItemGroup>
+      <AngularFiles Include="$(ProjectDir)wwwroot/dist" />
+      <None Update="@(AngularFiles)">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
   </Target>
 
   <ItemGroup>
@@ -25,6 +31,7 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\" />
+    <Folder Include="wwwroot\dist\" />
   </ItemGroup>
 
 </Project>
