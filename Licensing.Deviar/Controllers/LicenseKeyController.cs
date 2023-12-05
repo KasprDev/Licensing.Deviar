@@ -105,7 +105,9 @@ namespace Licensing.Deviar.Controllers
                 SoftwareId = dto.SoftwareId,
                 Key = Guid.NewGuid().ToString(),
                 CreatedOn = DateTime.UtcNow,
-                ExpiresOn = dto.ExpiresOn
+                ExpiresOn = dto.ExpiresOn,
+                Email = dto.Email,
+                Notes = dto.Notes
             };
 
             _context.LicenseKeys.Add(key);

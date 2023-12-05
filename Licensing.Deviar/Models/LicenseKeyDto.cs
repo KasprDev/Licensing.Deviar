@@ -8,6 +8,8 @@
         public DateTime CreatedOn { get; set; }
         public string HardwareId { get; set; }
         public DateTime LastUsed { get; set; }
+        public string? Email { get; set; }
+        public string? Notes { get; set; }
         public DateTime ExpiresOn { get; set; }
         public bool Locked { get; set; }
         public int SoftwareId { get; set; }

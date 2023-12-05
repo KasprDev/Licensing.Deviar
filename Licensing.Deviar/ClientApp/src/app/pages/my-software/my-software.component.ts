@@ -16,6 +16,8 @@ export class MySoftwareComponent implements OnInit {
   public newLicense: any = {};
   public software: any[] = [];
 
+  public adding: boolean;
+
   constructor(private api: ApiService, private modal: NzModalService) { }
 
   async ngOnInit() {
@@ -40,6 +42,8 @@ export class MySoftwareComponent implements OnInit {
   }
 
   async addLicense() {
+    this.adding = true;
+
     await this.api.addLicense(this.selectedSoftware, this.newLicense).then(async (resp) => {
       this.createLicense = false;
       this.selectedSoftware.licenses++;
@@ -55,5 +59,7 @@ export class MySoftwareComponent implements OnInit {
         nzContent: error.data.message
       });
     });
+
+    this.adding = false;
   }
 }

@@ -2,18 +2,6 @@
 <input type="text" nz-input [(ngModel)]="software.name" />
 <div style="padding: 5px;"></div>
 
-<div class="grid-2">
-  <div>
-    <label>Version</label>
-    <input type="text" nz-input [(ngModel)]="software.version" />
-  </div>
-  <div>
-    <label>Selly Product Id</label>
-    <input type="text" nz-input [(ngModel)]="software.sellyProductId" />
-  </div>
-</div>
-
-<div style="padding: 5px;"></div>
 <label>Description</label>
 <textarea nz-input rows="4" [(ngModel)]="software.description"></textarea> <br />
 
@@ -26,6 +14,8 @@
   <thead>
     <tr>
       <th>Key</th>
+      <th>Email</th>
+      <th>Notes</th>
       <th>Created</th>
       <th>Expiration Date</th>
       <th>Hardware ID</th>
@@ -36,6 +26,8 @@
   <tbody>
     <tr *ngFor="let data of licenseTable.data">
       <td>{{data.key}}</td>
+      <td>{{data.email}}</td>
+      <td>{{data.notes}}</td>
       <td>{{data.createdOn | date }}</td>
       <td>{{data.expiresOn | date }}</td>
       <td>{{data.hardwareId}}</td>
@@ -60,7 +52,7 @@
 
 <nz-modal [(nzVisible)]="editingLicense" nzTitle="Manage License" (nzOnCancel)="editingLicense = false" (nzOnOk)="editLicense()">
   <ng-container *nzModalContent>
-    <label>Expiration Date</label> <br />
+    <label>Expiration Date</label>
     <nz-date-picker [(ngModel)]="selectedLicense.expiresOn" [nzFormat]="'MM/dd/yyyy'"></nz-date-picker>
   </ng-container>
 </nz-modal>

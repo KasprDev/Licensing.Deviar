@@ -9,6 +9,7 @@ namespace Licensing.Deviar.Data
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        public string? Notes { get; set; }
         public string Key { get; set; }
         public DateTime? ActivatedOn { get; set; }
         public string? Email { get; set; }

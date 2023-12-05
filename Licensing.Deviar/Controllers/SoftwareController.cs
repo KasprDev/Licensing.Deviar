@@ -109,6 +109,8 @@ namespace Licensing.Deviar.Controllers
                     ActivatedOn = y.ActivatedOn,
                     CreatedOn = y.CreatedOn,
                     ExpiresOn = y.ExpiresOn,
+                    Notes = y.Notes,
+                    Email = y.Email,
                     HardwareId = y.HardwareId,
                     Id = y.Id,
                     Key = y.Key,

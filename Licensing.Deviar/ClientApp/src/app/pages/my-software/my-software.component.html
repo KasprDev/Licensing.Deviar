@@ -35,10 +35,20 @@
   </ng-container>
 </nz-modal>
 
-<nz-modal [(nzVisible)]="createLicense" nzTitle="Create New License Key" (nzOnCancel)="createLicense = false" (nzOnOk)="addLicense()">
+<nz-modal [(nzVisible)]="createLicense" nzTitle="Create New License Key" (nzOnCancel)="createLicense = false" (nzOnOk)="addLicense()" [nzOkLoading]="adding">
   <ng-container *nzModalContent>
-    <label>Expiration Date</label> <br />
-    <nz-date-picker [(ngModel)]="newLicense.expiresOn" [nzFormat]="'MM/dd/yyyy'"></nz-date-picker>
+    <div class="grid-2">
+      <div>
+        <label>Expiration Date</label> <br />
+        <nz-date-picker [(ngModel)]="newLicense.expiresOn" [nzFormat]="'MM/dd/yyyy'"></nz-date-picker>
+      </div>
+      <div>
+        <label>Email Address</label>
+        <input type="text" nz-input [(ngModel)]="newLicense.email" /> 
+      </div>
+    </div>
+    <label>Notes</label>
+    <textarea nz-input [(ngModel)]="newLicense.notes"></textarea>
   </ng-container>
 </nz-modal>
 
