@@ -12,6 +12,9 @@ export class ViewSoftwareComponent implements OnInit {
   public software: any = {};
   public selectedLicense: any = {};
   public editingLicense: boolean = false;
+  public editingSoftware: boolean = false;
+
+  public saving: boolean = false;
 
   constructor(private route: ActivatedRoute, private api: ApiService, private modal: NzModalService) { }
 
@@ -21,23 +24,14 @@ export class ViewSoftwareComponent implements OnInit {
     this.software = await this.api.getSoftware(id);
   }
 
-  async unlockKey(data) {
-    await this.api.unlockLicense(data).then((resp) => {
-      data.hardwareId = null;
-    });
-  }
+  async editSoftware() {
+    this.saving = true;
 
-  async editLicense() {
-    await this.api.editLicense(this.selectedLicense).then((resp) => {
-      this.editingLicense = false;
-    });
-  }
-
-  async saveChanges() {
     await this.api.saveSoftwareChanges(this.software).then(async (resp) => {
+      this.editingSoftware = false;
       await this.modal.create({
         nzTitle: 'Success!',
-        nzContent: 'The specified software has been updated successfully!'
+        nzContent: `${this.software.name} has been updated successfully!`
       });
     })
     .catch(async (error) => {
@@ -46,6 +40,22 @@ export class ViewSoftwareComponent implements OnInit {
         nzContent: error.data.message
       });
     });
+
+    this.saving = false;
+  }
+
+  async unlockKey(data) {
+    await this.api.unlockLicense(data).then((resp) => {
+      data.hardwareId = null;
+    });
+  }
+
+  async editLicense() {
+    this.saving = true;
+    await this.api.editLicense(this.selectedLicense).then((resp) => {
+      this.editingLicense = false;
+    });
+    this.saving = false;
   }
 
   async suspendLicense(license) {

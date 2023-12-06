@@ -1,10 +1,12 @@
 using System.Text;
 using Licensing.Deviar.Data;
+using Licensing.Deviar.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
+using Stripe;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,8 @@ builder.Services.AddCors(options =>
             .AllowCredentials()));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddTransient<MailService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -68,6 +72,8 @@ app.UseRouting();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+
+StripeConfiguration.ApiKey = app.Configuration.GetValue<string>("Stripe:Secret");
 
 using (var scope = app.Services.CreateScope())
 {

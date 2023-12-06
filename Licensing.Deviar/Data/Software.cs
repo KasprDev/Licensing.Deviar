@@ -11,11 +11,12 @@ namespace Licensing.Deviar.Data
 
         public string Name { get; set; }
         public string? Description { get; set; }
-        public string? SellyProductId { get; set; }
+        public string? StripeProductId { get; set; }
         public DateTime CreatedOn { get; set; }
         public double Version { get; set; }
         public string? UserId { get; set; }
         public virtual AppUser User { get; set; }
         public virtual ICollection<LicenseKey> LicenseKeys { get; set; }
+        public virtual ICollection<Reseller> Resellers { get; set; }
     }
 }

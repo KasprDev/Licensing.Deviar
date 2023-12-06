@@ -1,14 +1,13 @@
-input, textarea {
-  width: 400px;
-}
-
 label {
   display: block;
   font-weight: 500;
 }
 
+nz-date-picker {
+  width: 100%;
+}
+
 .button-container {
-  width: 400px;
   padding-top: 15px;
 }
 
@@ -24,7 +23,7 @@ label {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  width: 400px;
+  padding-bottom: 8px;
 }
 
 .grid-2 input[type="text"] {

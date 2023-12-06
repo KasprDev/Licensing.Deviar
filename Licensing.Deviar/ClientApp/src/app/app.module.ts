@@ -25,6 +25,8 @@ import { NzTableModule } from 'ng-zorro-antd/table';
 import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 import { ViewSoftwareComponent } from './pages/my-software/view-software/view-software.component';
 import { UsageLogsComponent } from './pages/usage-logs/usage-logs.component';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
 
 registerLocaleData(en);
 
@@ -50,7 +52,9 @@ registerLocaleData(en);
     NzDividerModule,
     NzModalModule,
     NzTableModule,
-    NzDatePickerModule
+    NzDatePickerModule,
+    NzDropDownModule,
+    NzInputNumberModule
   ],
   providers: [
     ApiService,

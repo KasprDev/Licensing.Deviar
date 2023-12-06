@@ -11,6 +11,8 @@ namespace Licensing.Deviar.Data
 
         public string? Notes { get; set; }
         public string Key { get; set; }
+        public string? Name { get; set; }
+        public string? TransactionId { get; set; }
         public DateTime? ActivatedOn { get; set; }
         public string? Email { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -23,5 +25,7 @@ namespace Licensing.Deviar.Data
         public bool Locked { get; set; }
         public int SoftwareId { get; set; }
         public virtual Software Software { get; set; }
+        public int? ResellerLogId { get; set; }
+        public virtual ResellerLog ResellerLog { get; set; }
     }
 }

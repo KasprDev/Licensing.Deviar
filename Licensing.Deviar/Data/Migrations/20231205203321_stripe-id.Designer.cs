@@ -4,6 +4,7 @@ using Licensing.Deviar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,16 +12,17 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Licensing.Deviar.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231205203321_stripe-id")]
+    partial class stripeid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "6.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("Licensing.Deviar.Data.AppUser", b =>
                 {
@@ -64,9 +66,6 @@ namespace Licensing.Deviar.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("Reseller")
-                        .HasColumnType("bit");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -94,14 +93,13 @@ namespace Licensing.Deviar.Data.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bd7ba3de-b82c-4b1a-b588-2df8799b8084",
+                            ConcurrencyStamp = "8e8289bb-d50e-4eb6-a79c-3c04e39840c2",
                             Email = "contact@deviar.net",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEIb8l+bHnwbyLLhSuuJvx5t0y9ZKa4tA8F8bX802bYEtsh8CCSsrt5fwpezaInqT6g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBjnWVd3hSq2b2kfMXrepv+sG1v9uQcY+vQ1glevn5ouE56oHFukS4XOs21fTS7NSg==",
                             PhoneNumberConfirmed = false,
-                            Reseller = false,
-                            SecurityStamp = "c365d017-cc81-4c5c-b02a-237df7f6e1e9",
+                            SecurityStamp = "041b7a7e-517e-4cc8-b76c-557528fbe025",
                             TwoFactorEnabled = false,
                             UserName = "contact@deviar.net"
                         });
@@ -113,7 +111,7 @@ namespace Licensing.Deviar.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime?>("ActivatedOn")
                         .HasColumnType("datetime2");
@@ -149,20 +147,11 @@ namespace Licensing.Deviar.Data.Migrations
                     b.Property<string>("MacAddress")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ResellerLogId")
-                        .HasColumnType("int");
-
                     b.Property<int>("SoftwareId")
                         .HasColumnType("int");
-
-                    b.Property<string>("TransactionId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -171,73 +160,13 @@ namespace Licensing.Deviar.Data.Migrations
                     b.ToTable("LicenseKeys");
                 });
 
-            modelBuilder.Entity("Licensing.Deviar.Data.Reseller", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Added")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Percentage")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("SoftwareId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SoftwareId");
-
-                    b.ToTable("Resellers");
-                });
-
-            modelBuilder.Entity("Licensing.Deviar.Data.ResellerLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("LicenseKeyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ResellerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LicenseKeyId")
-                        .IsUnique();
-
-                    b.HasIndex("ResellerId");
-
-                    b.ToTable("ResellerLogs");
-                });
-
             modelBuilder.Entity("Licensing.Deviar.Data.Software", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
@@ -253,6 +182,7 @@ namespace Licensing.Deviar.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<double>("Version")
@@ -271,7 +201,7 @@ namespace Licensing.Deviar.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<DateTime>("ActionTime")
                         .HasColumnType("datetime2");
@@ -322,7 +252,7 @@ namespace Licensing.Deviar.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -347,7 +277,7 @@ namespace Licensing.Deviar.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -433,42 +363,13 @@ namespace Licensing.Deviar.Data.Migrations
                     b.Navigation("Software");
                 });
 
-            modelBuilder.Entity("Licensing.Deviar.Data.Reseller", b =>
-                {
-                    b.HasOne("Licensing.Deviar.Data.Software", "Software")
-                        .WithMany("Resellers")
-                        .HasForeignKey("SoftwareId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Software");
-                });
-
-            modelBuilder.Entity("Licensing.Deviar.Data.ResellerLog", b =>
-                {
-                    b.HasOne("Licensing.Deviar.Data.LicenseKey", "LicenseKey")
-                        .WithOne("ResellerLog")
-                        .HasForeignKey("Licensing.Deviar.Data.ResellerLog", "LicenseKeyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Licensing.Deviar.Data.Reseller", "Reseller")
-                        .WithMany("Logs")
-                        .HasForeignKey("ResellerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("LicenseKey");
-
-                    b.Navigation("Reseller");
-                });
-
             modelBuilder.Entity("Licensing.Deviar.Data.Software", b =>
                 {
                     b.HasOne("Licensing.Deviar.Data.AppUser", "User")
                         .WithMany("Software")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -529,22 +430,9 @@ namespace Licensing.Deviar.Data.Migrations
                     b.Navigation("Software");
                 });
 
-            modelBuilder.Entity("Licensing.Deviar.Data.LicenseKey", b =>
-                {
-                    b.Navigation("ResellerLog")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Licensing.Deviar.Data.Reseller", b =>
-                {
-                    b.Navigation("Logs");
-                });
-
             modelBuilder.Entity("Licensing.Deviar.Data.Software", b =>
                 {
                     b.Navigation("LicenseKeys");
-
-                    b.Navigation("Resellers");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,20 +1,12 @@
-<label>Name</label>
-<input type="text" nz-input [(ngModel)]="software.name" />
-<div style="padding: 5px;"></div>
-
-<label>Description</label>
-<textarea nz-input rows="4" [(ngModel)]="software.description"></textarea> <br />
-
-<div class="button-container">
-  <button nz-button nzType="primary" (click)="saveChanges()">Save Changes</button> <br />
-</div>
-<div class="clear"></div><br />
+<h2>{{ software.name }}</h2>
+<nz-divider></nz-divider>
 
 <nz-table #licenseTable [nzData]="software.licenseKeys" class="table-container">
   <thead>
     <tr>
       <th>Key</th>
       <th>Email</th>
+      <th>Name</th>
       <th>Notes</th>
       <th>Created</th>
       <th>Expiration Date</th>
@@ -27,32 +19,80 @@
     <tr *ngFor="let data of licenseTable.data">
       <td>{{data.key}}</td>
       <td>{{data.email}}</td>
+      <td>{{data.name}}</td>
       <td>{{data.notes}}</td>
       <td>{{data.createdOn | date }}</td>
       <td>{{data.expiresOn | date }}</td>
       <td>{{data.hardwareId}}</td>
       <td>{{data.lastUsed | date }}</td>
       <td>
-        <a style="color: red;" *ngIf="!data.locked" (click)="suspendLicense(data)">Suspend</a>
-        <a *ngIf="data.locked" (click)="suspendLicense(data)">Activate</a>
+        <a (click)="changeExpireDate(data)">Edit</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a style="color: red;" (click)="deleteLicense(data)">Delete</a>
-        <nz-divider nzType="vertical"></nz-divider>
-        <a (click)="changeExpireDate(data)">Manage</a>
-        <nz-divider nzType="vertical"></nz-divider>
-        <a [routerLink]="'/usage/' + data.key">View Usage</a>
-        <div style="display: inline;" *ngIf="data.hardwareId != null">
-          <nz-divider nzType="vertical"></nz-divider>
-          <a (click)="unlockKey(data)" style="color: rgb(172, 116, 12);">Unlock</a>
-        </div>
+        <a nz-dropdown [nzDropdownMenu]="menu">
+          Options
+          <span nz-icon nzType="down"></span>
+        </a>
+
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+          <ul nz-menu nzSelectable>
+            <li nz-menu-item [nzDanger]="!data.locked" (click)="suspendLicense(data)">{{ (data.locked ? 'Reactivate' : 'Suspend') }} License</li>
+            <li nz-menu-item [routerLink]="'/usage/' + data.key">View Usage</li>
+            <li nz-menu-item *ngIf="data.hardwareId != null" [routerLink]="'/usage/' + data.key">Remove HWID</li>
+            <li nz-menu-item (click)="deleteLicense(data)" nzDanger>Delete License</li>
+          </ul>
+        </nz-dropdown-menu>
       </td>
     </tr>
   </tbody>
 </nz-table>
 
-<nz-modal [(nzVisible)]="editingLicense" nzTitle="Manage License" (nzOnCancel)="editingLicense = false" (nzOnOk)="editLicense()">
+<nz-modal [(nzVisible)]="editingLicense" nzTitle="Manage License" [nzOkText]="'Save Changes'" (nzOnCancel)="editingLicense = false" (nzOnOk)="editLicense()" [nzOkLoading]="saving">
   <ng-container *nzModalContent>
-    <label>Expiration Date</label>
-    <nz-date-picker [(ngModel)]="selectedLicense.expiresOn" [nzFormat]="'MM/dd/yyyy'"></nz-date-picker>
+    <div class="grid-2">
+      <div>
+        <label>Email</label>
+        <input type="text" nz-input [(ngModel)]="selectedLicense.email" />
+      </div>
+      <div>
+        <label>Customer Name</label>
+        <input type="text" nz-input [(ngModel)]="selectedLicense.name" />
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label>Expiration Date</label>
+        <nz-date-picker [(ngModel)]="selectedLicense.expiresOn" [nzFormat]="'MM/dd/yyyy'"></nz-date-picker>
+      </div>
+      <div>
+        
+      </div>
+    </div>
+
+    <label>Notes</label>
+    <textarea nz-input style="resize: none;" [(ngModel)]="selectedLicense.notes" rows="3"></textarea>
+  </ng-container>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="editingSoftware" nzTitle="Manage Software" (nzOnCancel)="editingSoftware = false" (nzOnOk)="editSoftware()" [nzOkText]="'Save Changes'" [nzOkLoading]="saving">
+  <ng-container *nzModalContent>
+    <label>Name</label>
+    <input type="text" nz-input [(ngModel)]="software.name" />
+    <div style="padding: 5px;"></div>
+
+    <div class="grid-2">
+      <div>
+        <label>Version</label>
+        <input type="text" nz-input [(ngModel)]="software.version" />
+      </div>
+      <div>
+        <label>Stripe Product Id</label>
+        <input type="text" nz-input [(ngModel)]="software.stripeProductId" />
+      </div>
+    </div>
+
+    <div style="padding: 5px;"></div>
+    <label>Description</label>
+    <textarea nz-input rows="4" [(ngModel)]="software.description"></textarea> <br />
   </ng-container>
 </nz-modal>

@@ -22,7 +22,7 @@ namespace Licensing.Deviar.Controllers
         [HttpPost("selly/paid")]
         public async Task<IActionResult> ProcessSellyPayment([FromBody] SellyPaymentDto dto)
         {
-            var product = _context.Software.FirstOrDefault(x => x.SellyProductId == dto.product_id);
+            var product = _context.Software.FirstOrDefault(x => x.StripeProductId == dto.product_id);
 
             if (product == null)
                 return BadRequest("Selly Product ID not found.");

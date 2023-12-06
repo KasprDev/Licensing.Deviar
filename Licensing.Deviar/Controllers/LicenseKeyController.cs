@@ -49,12 +49,16 @@ namespace Licensing.Deviar.Controllers
             var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
             var license = _context.LicenseKeys.Include(x => x.Software)
-                .FirstOrDefault(x => x.Key == dto.Key && x.Software.UserId == user.Id);
+                .FirstOrDefault(x => x.Key == dto.Key && x.Software.UserId == user!.Id);
 
             if (license == null)
                 return BadRequest();
 
             license.ExpiresOn = dto.ExpiresOn;
+            license.Name = dto.Name;
+            license.Notes = dto.Notes;
+            license.Email = dto.Email;
+
             _context.LicenseKeys.Update(license);
             await _context.SaveChangesAsync().ConfigureAwait(false);
 

@@ -13,15 +13,22 @@ namespace Licensing.Deviar.Data
         public virtual DbSet<LicenseKey> LicenseKeys { get; set; }
         public virtual DbSet<Software> Software { get; set; }
         public virtual DbSet<UsageLog> UsageLogs { get; set; }
+        public virtual DbSet<Reseller> Resellers { get; set; }
+        public virtual DbSet<ResellerLog> ResellerLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            this.SeedUsers(builder);
+            SeedUsers(builder);
 
             builder.Entity<Software>()
                 .HasMany(x => x.LicenseKeys)
+                .WithOne(x => x.Software)
+                .HasForeignKey(x => x.SoftwareId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Software>()
+                .HasMany(x => x.Resellers)
                 .WithOne(x => x.Software)
                 .HasForeignKey(x => x.SoftwareId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -31,6 +38,18 @@ namespace Licensing.Deviar.Data
                 .WithOne(x => x.User)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<LicenseKey>()
+                .HasOne(x => x.ResellerLog)
+                .WithOne(x => x.LicenseKey)
+                .HasForeignKey<ResellerLog>(x => x.LicenseKeyId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Reseller>()
+                .HasMany(x => x.Logs)
+                .WithOne(x => x.Reseller)
+                .HasForeignKey(x => x.ResellerId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
         private void SeedUsers(ModelBuilder builder)

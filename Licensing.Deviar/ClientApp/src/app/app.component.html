@@ -38,6 +38,10 @@
                [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
             ></span>
         </span>
+
+        <div class="right-text" *ngIf="loggedIn()">
+          <a (click)="logOut()">Log Out</a>
+        </div>
       </div>
     </nz-header>
     <nz-content>

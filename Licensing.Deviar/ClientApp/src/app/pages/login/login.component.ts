@@ -22,7 +22,12 @@ export class LoginComponent implements OnInit {
     this.loggingIn = true;
     await this.api.login(this.user).then((resp) => {
       localStorage.setItem('token', resp.token);
-      this.router.navigate(['/software']);
+
+      if (!resp.reseller) {
+        this.router.navigate(['/software']);
+      } else {
+        this.router.navigate(['/resell']);
+      }
     })
     .catch(async (error) => {
       await this.modal.create({

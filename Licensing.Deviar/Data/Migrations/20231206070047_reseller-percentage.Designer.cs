@@ -4,6 +4,7 @@ using Licensing.Deviar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Licensing.Deviar.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231206070047_reseller-percentage")]
+    partial class resellerpercentage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +67,6 @@ namespace Licensing.Deviar.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("Reseller")
-                        .HasColumnType("bit");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -94,14 +94,13 @@ namespace Licensing.Deviar.Data.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bd7ba3de-b82c-4b1a-b588-2df8799b8084",
+                            ConcurrencyStamp = "ee3814c8-e214-418e-bebe-c7c876dcb127",
                             Email = "contact@deviar.net",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEIb8l+bHnwbyLLhSuuJvx5t0y9ZKa4tA8F8bX802bYEtsh8CCSsrt5fwpezaInqT6g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELwCcfiWDdlTKu5ZBYv0+1MpkEmg5m7mUidCKceyt3iSKAYpqLzBbFeIjKCoNrEh4A==",
                             PhoneNumberConfirmed = false,
-                            Reseller = false,
-                            SecurityStamp = "c365d017-cc81-4c5c-b02a-237df7f6e1e9",
+                            SecurityStamp = "80710124-ec52-439c-bc3f-43cead704724",
                             TwoFactorEnabled = false,
                             UserName = "contact@deviar.net"
                         });

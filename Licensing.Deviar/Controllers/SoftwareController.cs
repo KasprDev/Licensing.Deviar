@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Headers;
 using Licensing.Deviar.Data;
+using Licensing.Deviar.Helpers;
 using Licensing.Deviar.Models;
+using Licensing.Deviar.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,29 +13,105 @@ namespace Licensing.Deviar.Controllers
 {
     [Route("api/software")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class SoftwareController : Controller
-    {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<AppUser> _userManager;
-        private readonly IWebHostEnvironment _environment;
-
-        public SoftwareController(
-            ApplicationDbContext context,
+    public class SoftwareController(ApplicationDbContext context,
             UserManager<AppUser> userManager,
-            IWebHostEnvironment environment)
+            IWebHostEnvironment environment,
+            MailService mailService)
+        : Controller
+    {
+
+        [AllowAnonymous]
+        [HttpGet("public/list/{userId}")]
+        public async Task<IActionResult> ListPublicSoftware(string userId)
         {
-            _context = context;
-            _userManager = userManager;
-            _environment = environment;
+            var software = context.Software.Where(x => x.UserId == userId);
+
+            return Ok(software.Select(x => new SoftwareDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Price = StripeHelper.GetProductPrice(x.StripeProductId ?? "No Product ID"),
+                Description = x.Description,
+                CreatedOn = x.CreatedOn,
+                StripeProductId = x.StripeProductId,
+                Version = x.Version,
+                UserId = x.UserId
+            }));
+        }
+
+        [HttpPost("reseller/add")]
+        public async Task<IActionResult> AddReseller([FromBody] ResellerDto dto)
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+
+            if (user!.Email != "contact@deviar.net")
+                return BadRequest();
+
+            var software = await context.Software.FirstOrDefaultAsync(x => x.Id == dto.SoftwareId);
+
+            if (string.IsNullOrEmpty(dto.Email))
+                return BadRequest(new
+                {
+                    Message = "Please enter a valid email."
+                });
+
+            if (string.IsNullOrEmpty(dto.Code))
+                return BadRequest(new
+                {
+                    Message = "Please enter a valid code."
+                });
+
+            if (dto.Percentage <= 0)
+                return BadRequest(new
+                {
+                    Message = "Please enter a valid percentage."
+                });
+
+            var reseller = new Reseller
+            {
+                Name = dto.Name,
+                Email = dto.Email,
+                Code = dto.Code,
+                SoftwareId = dto.SoftwareId,
+                Added = DateTime.UtcNow,
+                Percentage = dto.Percentage
+            };
+
+            context.Resellers.Add(reseller);
+            await context.SaveChangesAsync();
+
+            var newUser = new AppUser()
+            {
+                UserName = dto.Email,
+                Email = dto.Email,
+                Reseller = true
+            };
+
+            var password = Guid.NewGuid().ToString() + "aA";
+
+            var resp = await userManager.CreateAsync(newUser, password);
+
+            if (resp.Succeeded)
+            {
+                await context.SaveChangesAsync();
+                await mailService.Send($"You've been added as a seller of {software.Name}.", $"Hi, {dto.Name}! You've been added as a reseller of {software.Name} on Deviar! You can access your reseller account <a href=\"https://licensing.deviar.net\">here</a>. <br /><br /><b>Email:</b> {dto.Email}<br /><b>Password:</b> {password}", dto.Email);
+
+                return Ok();
+            }
+
+            return BadRequest(new
+            {
+                Message = resp.Errors.First().Description
+            });
         }
 
         [HttpPost]
         [Route("edit")]
         public async Task<IActionResult> EditSoftware([FromBody] SoftwareDto dto)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+            var user = await userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
-            var software = _context.Software.FirstOrDefault(x => x.Id == dto.Id && x.UserId == user.Id);
+            var software = context.Software.FirstOrDefault(x => x.Id == dto.Id && x.UserId == user.Id);
 
             if (software == null)
                 return BadRequest();
@@ -46,13 +124,35 @@ namespace Licensing.Deviar.Controllers
                 });
             }
 
-            software.SellyProductId = dto.SellyProductId;
+            software.StripeProductId = dto.StripeProductId;
             software.Name = dto.Name;
             software.Description = dto.Description;
             software.Version = dto.Version;
-            _context.Software.Update(software);
 
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            context.Software.Update(software);
+            await context.SaveChangesAsync().ConfigureAwait(false);
+
+            return Ok();
+        }
+
+        [HttpPost("delete")]
+        public async Task<IActionResult> Delete([FromBody] SoftwareDto dto)
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+
+            var software = await context.Software.FirstOrDefaultAsync(x => x.Id == dto.Id && user.Id == x.UserId);
+
+            if (software == null)
+            {
+                return BadRequest(new
+                {
+                    Message = "Unable to find the specified software."
+                });
+            }
+
+            context.Software.Remove(software);
+            await context.SaveChangesAsync();
+
             return Ok();
         }
 
@@ -60,9 +160,9 @@ namespace Licensing.Deviar.Controllers
         [Route("create")]
         public async Task<IActionResult> Create([FromBody] SoftwareDto dto)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+            var user = await userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
-            if (_context.Software.Any(x => x.Name == dto.Name))
+            if (context.Software.Any(x => x.Name == dto.Name))
             {
                 return BadRequest(new
                 {
@@ -79,8 +179,8 @@ namespace Licensing.Deviar.Controllers
                 Version = 1.0
             };
 
-            _context.Software.Add(software);
-            await _context.SaveChangesAsync().ConfigureAwait(false);
+            context.Software.Add(software);
+            await context.SaveChangesAsync().ConfigureAwait(false);
             return Ok();
         }
 
@@ -88,9 +188,9 @@ namespace Licensing.Deviar.Controllers
         [Route("get/{id}")]
         public async Task<IActionResult> GetSoftwareById(int id)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+            var user = await userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
 
-            var x = _context.Software.AsNoTracking().Include(y => y.LicenseKeys)
+            var x = context.Software.AsNoTracking().Include(y => y.LicenseKeys)
                 .FirstOrDefault(y => y.UserId == user.Id && y.Id == id);
 
             if (x == null)
@@ -102,7 +202,7 @@ namespace Licensing.Deviar.Controllers
                 Name = x.Name,
                 Description = x.Description,
                 CreatedOn = x.CreatedOn,
-                SellyProductId = x.SellyProductId,
+                StripeProductId = x.StripeProductId,
                 Version = x.Version,
                 LicenseKeys = x.LicenseKeys.Select(y => new LicenseKeyDto()
                 {
@@ -114,6 +214,7 @@ namespace Licensing.Deviar.Controllers
                     HardwareId = y.HardwareId,
                     Id = y.Id,
                     Key = y.Key,
+                    Name = y.Name,
                     LastUsed = y.LastUsed,
                     Locked = y.Locked
                 }).ToArray()
@@ -124,8 +225,8 @@ namespace Licensing.Deviar.Controllers
         [Route("list")]
         public async Task<IActionResult> GetSoftware()
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
-            var software = _context.Software.Where(x => x.UserId == user!.Id);
+            var user = await userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+            var software = context.Software.Where(x => x.UserId == user!.Id);
 
             return Ok(software.Select(x => new SoftwareDto()
             {
@@ -134,7 +235,8 @@ namespace Licensing.Deviar.Controllers
                 Description = x.Description,
                 Licenses = x.LicenseKeys.Count(),
                 CreatedOn = x.CreatedOn,
-                Version = x.Version
+                Version = x.Version,
+                UserId = x.UserId
             }));
         }
     }

@@ -16,6 +16,10 @@ export class MySoftwareComponent implements OnInit {
   public newLicense: any = {};
   public software: any[] = [];
 
+  public reseller: any = {};
+
+  public addingReseller: boolean = false;
+
   public adding: boolean;
 
   constructor(private api: ApiService, private modal: NzModalService) { }
@@ -29,6 +33,33 @@ export class MySoftwareComponent implements OnInit {
     this.createLicense = true;
   }
 
+  addReseller(data) {
+    this.selectedSoftware = data;
+    this.addingReseller = true;
+  }
+
+  async createReseller() {
+    this.adding = true;
+
+    this.reseller.softwareId = this.selectedSoftware.id;
+
+    await this.api.addReseller(this.reseller).then((resp) => {
+      this.modal.success({
+        nzTitle: 'Success!',
+        nzContent: `${this.reseller.name} has been added as a reseller!`
+      });
+      this.addingReseller = false;
+      this.reseller = {};
+    })
+    .catch(async (error) => {
+      await this.modal.create({
+        nzTitle: 'Oops!',
+        nzContent: error.data.message
+      });
+    });
+    this.adding = false;
+  }
+
   async addSoftware() {
     await this.api.addSoftware(this.newSoftware).then((resp) => {
       window.location.reload();
@@ -38,6 +69,25 @@ export class MySoftwareComponent implements OnInit {
         nzTitle: 'Oops!',
         nzContent: error.data.message
       });
+    });
+  }
+
+  async deleteSoftware(software) {
+    await this.modal.confirm({
+      nzTitle: 'Delete Software',
+      nzContent: 'Are you sure you want to delete this software? This cannot be undone.',
+      nzOkDanger: true,
+      nzOkText: 'Delete',
+      nzOnOk: async () => {
+        await this.api.deleteSoftware(software).then((resp) => {
+          this.software.splice(this.software.indexOf(software), 1);
+        }).catch((error) => {
+          this.modal.error({
+            nzTitle: 'Oops!',
+            nzContent: error.data.message
+          });
+        });
+      }
     });
   }
 

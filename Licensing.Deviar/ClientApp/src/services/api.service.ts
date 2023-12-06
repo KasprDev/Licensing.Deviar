@@ -55,8 +55,20 @@ export class ApiService {
     return await resp.toPromise();
   }
 
+  async addReseller(license) {
+    var resp = await this.http.post<any>('api/software/reseller/add', license);
+
+    return await resp.toPromise();
+  }
+
   async saveSoftwareChanges(software) {
     var resp = await this.http.post<any>('api/software/edit', software);
+
+    return await resp.toPromise();
+  }
+
+  async deleteSoftware(software) {
+    var resp = await this.http.post<any>('api/software/delete', software);
 
     return await resp.toPromise();
   }

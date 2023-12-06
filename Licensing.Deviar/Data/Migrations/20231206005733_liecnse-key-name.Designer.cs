@@ -4,6 +4,7 @@ using Licensing.Deviar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Licensing.Deviar.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231206005733_liecnse-key-name")]
+    partial class liecnsekeyname
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +67,6 @@ namespace Licensing.Deviar.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("Reseller")
-                        .HasColumnType("bit");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -94,14 +94,13 @@ namespace Licensing.Deviar.Data.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bd7ba3de-b82c-4b1a-b588-2df8799b8084",
+                            ConcurrencyStamp = "632c5d23-1b67-4c43-8c75-eee9d3cbb807",
                             Email = "contact@deviar.net",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEIb8l+bHnwbyLLhSuuJvx5t0y9ZKa4tA8F8bX802bYEtsh8CCSsrt5fwpezaInqT6g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFPprl4qZsfs0MOwjdCmCdWlDG/RogBCfScJ0IMMr7oJtn85IoE3W7FbNaoiF/noDQ==",
                             PhoneNumberConfirmed = false,
-                            Reseller = false,
-                            SecurityStamp = "c365d017-cc81-4c5c-b02a-237df7f6e1e9",
+                            SecurityStamp = "2cdd7204-4731-4190-8567-ab3f86f34c38",
                             TwoFactorEnabled = false,
                             UserName = "contact@deviar.net"
                         });
@@ -155,9 +154,6 @@ namespace Licensing.Deviar.Data.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ResellerLogId")
-                        .HasColumnType("int");
-
                     b.Property<int>("SoftwareId")
                         .HasColumnType("int");
 
@@ -169,66 +165,6 @@ namespace Licensing.Deviar.Data.Migrations
                     b.HasIndex("SoftwareId");
 
                     b.ToTable("LicenseKeys");
-                });
-
-            modelBuilder.Entity("Licensing.Deviar.Data.Reseller", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Added")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Percentage")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("SoftwareId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SoftwareId");
-
-                    b.ToTable("Resellers");
-                });
-
-            modelBuilder.Entity("Licensing.Deviar.Data.ResellerLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("LicenseKeyId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ResellerId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LicenseKeyId")
-                        .IsUnique();
-
-                    b.HasIndex("ResellerId");
-
-                    b.ToTable("ResellerLogs");
                 });
 
             modelBuilder.Entity("Licensing.Deviar.Data.Software", b =>
@@ -433,36 +369,6 @@ namespace Licensing.Deviar.Data.Migrations
                     b.Navigation("Software");
                 });
 
-            modelBuilder.Entity("Licensing.Deviar.Data.Reseller", b =>
-                {
-                    b.HasOne("Licensing.Deviar.Data.Software", "Software")
-                        .WithMany("Resellers")
-                        .HasForeignKey("SoftwareId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Software");
-                });
-
-            modelBuilder.Entity("Licensing.Deviar.Data.ResellerLog", b =>
-                {
-                    b.HasOne("Licensing.Deviar.Data.LicenseKey", "LicenseKey")
-                        .WithOne("ResellerLog")
-                        .HasForeignKey("Licensing.Deviar.Data.ResellerLog", "LicenseKeyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Licensing.Deviar.Data.Reseller", "Reseller")
-                        .WithMany("Logs")
-                        .HasForeignKey("ResellerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("LicenseKey");
-
-                    b.Navigation("Reseller");
-                });
-
             modelBuilder.Entity("Licensing.Deviar.Data.Software", b =>
                 {
                     b.HasOne("Licensing.Deviar.Data.AppUser", "User")
@@ -529,22 +435,9 @@ namespace Licensing.Deviar.Data.Migrations
                     b.Navigation("Software");
                 });
 
-            modelBuilder.Entity("Licensing.Deviar.Data.LicenseKey", b =>
-                {
-                    b.Navigation("ResellerLog")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Licensing.Deviar.Data.Reseller", b =>
-                {
-                    b.Navigation("Logs");
-                });
-
             modelBuilder.Entity("Licensing.Deviar.Data.Software", b =>
                 {
                     b.Navigation("LicenseKeys");
-
-                    b.Navigation("Resellers");
                 });
 #pragma warning restore 612, 618
         }

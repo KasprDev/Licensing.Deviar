@@ -3,7 +3,7 @@
 
 <button nz-button nzType="primary" (click)="createSoftware = true">Create New</button> <br /> <br />
 
-<nz-table #softwareTable [nzData]="software" class="table-container">
+<nz-table #softwareTable [nzData]="[0]" class="table-container">
   <thead>
     <tr>
       <th>Name</th>
@@ -13,14 +13,16 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let data of softwareTable.data">
-      <td>{{data.name}}</td>
-      <td>{{data.description}}</td>
-      <td>{{data.licenses}}</td>
+    <tr *ngFor="let data of software">
+      <td style="cursor: pointer;" [routerLink]="'/software/' + data.id">{{data.name}}</td>
+      <td style="cursor: pointer;" [routerLink]="'/software/' + data.id">{{data.description}}</td>
+      <td style="cursor: pointer;" [routerLink]="'/software/' + data.id">{{data.licenses}}</td>
       <td>
         <a (click)="selectSoftware(data)">Create License</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a [routerLink]="'/software/' + data.id">View</a>
+        <a (click)="addReseller(data)">Add Reseller</a>
+        <nz-divider nzType="vertical"></nz-divider>
+        <a style="color: red;" (click)="deleteSoftware(data)">Delete</a>
       </td>
     </tr>
   </tbody>
@@ -49,6 +51,32 @@
     </div>
     <label>Notes</label>
     <textarea nz-input [(ngModel)]="newLicense.notes"></textarea>
+  </ng-container>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="addingReseller" nzTitle="Add Reseller" [nzOkText]="'Add Reseller'" (nzOnCancel)="addingReseller = false" (nzOnOk)="createReseller()" [nzOkLoading]="adding">
+  <ng-container *nzModalContent>
+    <div class="grid-2">
+      <div>
+        <label>Email Address</label>
+        <input type="text" nz-input [(ngModel)]="reseller.email" /> 
+      </div>
+      <div>
+        <label>Name</label>
+        <input type="text" nz-input [(ngModel)]="reseller.name" /> 
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <label>Percentage</label>
+        <nz-input-number [(ngModel)]="reseller.percentage" [nzMin]="1" [nzMax]="100" [nzStep]="1"></nz-input-number>
+      </div>
+      <div>
+        <label>Code</label>
+        <input type="text" nz-input [(ngModel)]="reseller.code" /> 
+      </div>
+    </div>
   </ng-container>
 </nz-modal>
 

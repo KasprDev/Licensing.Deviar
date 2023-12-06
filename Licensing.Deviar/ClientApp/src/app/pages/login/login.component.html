@@ -1,5 +1,9 @@
 <h2>Login</h2>
 <nz-divider></nz-divider>
+
+<label>Email Address</label> <br />
 <input type="text" nz-input [(ngModel)]="user.email" /> <br /> <br />
+
+<label>Password</label> <br />
 <input type="password" nz-input [(ngModel)]="user.password" /> <br /> <br />
 <button nz-button nzType="primary" (click)="login()" [nzLoading]="loggingIn">Login</button>
