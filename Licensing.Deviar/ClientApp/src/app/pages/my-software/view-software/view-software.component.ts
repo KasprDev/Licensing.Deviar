@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ApiService } from 'src/services/api.service';
 
@@ -16,9 +16,12 @@ export class ViewSoftwareComponent implements OnInit {
 
   public saving: boolean = false;
 
-  constructor(private route: ActivatedRoute, private api: ApiService, private modal: NzModalService) { }
+  constructor(private route: ActivatedRoute, private api: ApiService, private modal: NzModalService, private router: Router) { }
 
   async ngOnInit() {
+    if (localStorage.getItem('reseller'))
+      this.router.navigate(['/resell']);
+
     let id = this.route.snapshot.paramMap.get('id');
 
     this.software = await this.api.getSoftware(id);

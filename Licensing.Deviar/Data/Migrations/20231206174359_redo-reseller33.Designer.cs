@@ -4,6 +4,7 @@ using Licensing.Deviar.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Licensing.Deviar.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231206174359_redo-reseller33")]
+    partial class redoreseller33
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,13 +101,13 @@ namespace Licensing.Deviar.Data.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bb903cf8-e595-4e45-901d-ee010fdeea8e",
+                            ConcurrencyStamp = "4eae93c9-dfb1-42fd-a72a-23e987cf06e0",
                             Email = "contact@deviar.net",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
-                            PasswordHash = "AQAAAAIAAYagAAAAEDk0eYwQTrb46ZITKSbQAjLi+bSDrIDAWS/iLVVBnKzXhDdQMKdBn7FYGJUB92jT9g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDW6Chuzcca2M46GH6ZFQwN94jFDgsLIF3JlPhLQup3bHMAeJn9tXit0NrevImSx0A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ba973283-487a-4979-b1af-34ecd9e3e53d",
+                            SecurityStamp = "57c72ad9-eb4b-4e9a-b701-5b75aca14d58",
                             TwoFactorEnabled = false,
                             UserName = "contact@deviar.net"
                         });
@@ -215,9 +218,6 @@ namespace Licensing.Deviar.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("LicenseKeyId")
                         .HasColumnType("int");

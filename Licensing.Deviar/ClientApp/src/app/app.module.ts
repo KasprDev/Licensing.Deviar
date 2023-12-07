@@ -27,6 +27,9 @@ import { ViewSoftwareComponent } from './pages/my-software/view-software/view-so
 import { UsageLogsComponent } from './pages/usage-logs/usage-logs.component';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzInputNumberModule } from 'ng-zorro-antd/input-number';
+import { ResellComponent } from './pages/resell/resell.component';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { ResellerListComponent } from './pages/reseller-list/reseller-list.component';
 
 registerLocaleData(en);
 
@@ -36,7 +39,9 @@ registerLocaleData(en);
     LoginComponent,
     MySoftwareComponent,
     ViewSoftwareComponent,
-    UsageLogsComponent
+    UsageLogsComponent,
+    ResellComponent,
+    ResellerListComponent
   ],
   imports: [
     BrowserModule,
@@ -54,7 +59,8 @@ registerLocaleData(en);
     NzTableModule,
     NzDatePickerModule,
     NzDropDownModule,
-    NzInputNumberModule
+    NzInputNumberModule,
+    NzSpinModule
   ],
   providers: [
     ApiService,

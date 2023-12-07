@@ -17,6 +17,6 @@ namespace Licensing.Deviar.Data
         public string? UserId { get; set; }
         public virtual AppUser User { get; set; }
         public virtual ICollection<LicenseKey> LicenseKeys { get; set; }
-        public virtual ICollection<Reseller> Resellers { get; set; }
+        public virtual ICollection<ResellerSoftware> Resellers { get; set; }
     }
 }

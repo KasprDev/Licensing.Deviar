@@ -18,6 +18,13 @@ export class AppComponent {
       return false;
   }
 
+  reseller(): boolean {
+    if (localStorage.getItem('reseller'))
+    return true;
+  else
+    return false;
+  }
+
   async logOut() {
     await this.modal.warning({
       nzTitle: 'Log Out',

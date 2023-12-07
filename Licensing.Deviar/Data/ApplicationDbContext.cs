@@ -15,6 +15,7 @@ namespace Licensing.Deviar.Data
         public virtual DbSet<UsageLog> UsageLogs { get; set; }
         public virtual DbSet<Reseller> Resellers { get; set; }
         public virtual DbSet<ResellerLog> ResellerLogs { get; set; }
+        public virtual DbSet<ResellerSoftware> ResellerSoftware { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -38,6 +39,18 @@ namespace Licensing.Deviar.Data
                 .WithOne(x => x.User)
                 .HasForeignKey(x => x.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Reseller>()
+                .HasOne(x => x.User)
+                .WithOne(x => x.Reseller)
+                .HasForeignKey<AppUser>(x => x.ResellerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Reseller>()
+                .HasMany(x => x.Software)
+                .WithOne(x => x.Reseller)
+                .HasForeignKey(x => x.ResellerId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<LicenseKey>()
                 .HasOne(x => x.ResellerLog)

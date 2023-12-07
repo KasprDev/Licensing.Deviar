@@ -14,8 +14,11 @@
     <ul nz-menu nzTheme="dark" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
       <li nz-submenu nzOpen nzTitle="Dashboard" nzIcon="dashboard" *ngIf="loggedIn()">
         <ul>
-          <li nz-menu-item nzMatchRouterExact>
+          <li nz-menu-item nzMatchRouterExact *ngIf="!reseller()">
             <a routerLink="software">My Software</a>
+          </li>
+          <li nz-menu-item nzMatchRouterExact *ngIf="reseller()">
+            <a routerLink="resell">Reseller Software</a>
           </li>
         </ul>
       </li>
@@ -40,7 +43,7 @@
         </span>
 
         <div class="right-text" *ngIf="loggedIn()">
-          <a (click)="logOut()">Log Out</a>
+          <a (click)="logOut()" style="color: #111; font-weight: 600;">Log Out</a>
         </div>
       </div>
     </nz-header>

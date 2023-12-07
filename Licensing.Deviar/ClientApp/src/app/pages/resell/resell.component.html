@@ -1,0 +1,28 @@
+<h2>Resell Software</h2>
+<nz-divider></nz-divider>
+
+<nz-table #softwareTable [nzData]="software">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Amount Sold</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of softwareTable.data">
+        <td>{{ data.name }}</td>
+        <td>{{ data.price | currency }}</td>
+        <td>{{ data.amountSold }}</td>
+        <td>{{ data.description }}</td>
+        <td>
+          <nz-spin [nzSpinning]="data.creating">
+            <a (click)="createLink(data)">{{ (creating ? 'Creating' : 'Create') }} Payment Link</a>
+          </nz-spin>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+  

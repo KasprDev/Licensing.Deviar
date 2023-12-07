@@ -26,6 +26,7 @@ export class LoginComponent implements OnInit {
       if (!resp.reseller) {
         this.router.navigate(['/software']);
       } else {
+        localStorage.setItem('reseller', 'true');
         this.router.navigate(['/resell']);
       }
     })

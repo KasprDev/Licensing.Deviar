@@ -31,6 +31,30 @@ export class ApiService {
     return await resp.toPromise();
   }
 
+  async getResellerSoftware() {
+    var resp = await this.http.get<any>('api/reseller/list');
+
+    return await resp.toPromise();
+  }
+
+  async deleteReseller(dto) {
+    var resp = await this.http.post<any>('api/software/remove/reseller', dto);
+
+    return await resp.toPromise();
+  }
+
+  async createResellerLink(softwareId) {
+    var resp = await this.http.get<any>('api/reseller/start/' + softwareId);
+
+    return await resp.toPromise();
+  }
+
+  async getResellers(softwareId) {
+    var resp = await this.http.get<any>('api/software/resellers/' + softwareId);
+
+    return await resp.toPromise();
+  }
+
   async getSoftwareList() {
     var resp = await this.http.get<any>('api/software/list');
 

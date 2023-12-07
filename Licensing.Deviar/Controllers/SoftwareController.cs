@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using Licensing.Deviar.Data;
+using Licensing.Deviar.Data.Migrations;
 using Licensing.Deviar.Helpers;
 using Licensing.Deviar.Models;
 using Licensing.Deviar.Services;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Stripe.Identity;
 
 namespace Licensing.Deviar.Controllers
 {
@@ -47,62 +49,87 @@ namespace Licensing.Deviar.Controllers
             if (user!.Email != "contact@deviar.net")
                 return BadRequest();
 
-            var software = await context.Software.FirstOrDefaultAsync(x => x.Id == dto.SoftwareId);
-
             if (string.IsNullOrEmpty(dto.Email))
                 return BadRequest(new
                 {
                     Message = "Please enter a valid email."
                 });
 
-            if (string.IsNullOrEmpty(dto.Code))
-                return BadRequest(new
+            var software = await context.Software.FirstOrDefaultAsync(x => x.Id == dto.SoftwareId);
+            var resellerAcc = await context.Users.FirstOrDefaultAsync(x => x.ResellerId != null && x.Email == dto.Email);
+
+            // Reseller already exists, just add the new software to their reseller account.
+            if (resellerAcc != null)
+            {
+                var resellerSoftware = new ResellerSoftware
                 {
-                    Message = "Please enter a valid code."
-                });
+                    SoftwareId = software.Id,
+                    ResellerId = resellerAcc.ResellerId!.Value
+                };
 
-            if (dto.Percentage <= 0)
-                return BadRequest(new
-                {
-                    Message = "Please enter a valid percentage."
-                });
-
-            var reseller = new Reseller
-            {
-                Name = dto.Name,
-                Email = dto.Email,
-                Code = dto.Code,
-                SoftwareId = dto.SoftwareId,
-                Added = DateTime.UtcNow,
-                Percentage = dto.Percentage
-            };
-
-            context.Resellers.Add(reseller);
-            await context.SaveChangesAsync();
-
-            var newUser = new AppUser()
-            {
-                UserName = dto.Email,
-                Email = dto.Email,
-                Reseller = true
-            };
-
-            var password = Guid.NewGuid().ToString() + "aA";
-
-            var resp = await userManager.CreateAsync(newUser, password);
-
-            if (resp.Succeeded)
-            {
+                context.ResellerSoftware.Add(resellerSoftware);
                 await context.SaveChangesAsync();
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(dto.Code))
+                    return BadRequest(new
+                    {
+                        Message = "Please enter a valid code."
+                    });
+
+                if (dto.Percentage <= 0)
+                    return BadRequest(new
+                    {
+                        Message = "Please enter a valid percentage."
+                    });
+
+                var reseller = new Reseller
+                {
+                    Name = dto.Name,
+                    Email = dto.Email,
+                    Code = dto.Code,
+                    SoftwareId = dto.SoftwareId,
+                    Added = DateTime.UtcNow,
+                    Percentage = dto.Percentage
+                };
+
+                context.Resellers.Add(reseller);
+                await context.SaveChangesAsync();
+
+                var resellerSoftware = new ResellerSoftware
+                {
+                    SoftwareId = software.Id,
+                    ResellerId = reseller.Id
+                };
+
+                context.ResellerSoftware.Add(resellerSoftware);
+                await context.SaveChangesAsync();
+
+                resellerAcc = new AppUser()
+                {
+                    UserName = dto.Email,
+                    Email = dto.Email,
+                    Reseller = reseller
+                };
+
+                var password = Guid.NewGuid() + "aA";
+                var resp = await userManager.CreateAsync(resellerAcc, password);
+
+                if (!resp.Succeeded)
+                {
+                    return BadRequest(new
+                    {
+                        Message = resp.Errors.First().Description
+                    });
+                }
+
                 await mailService.Send($"You've been added as a seller of {software.Name}.", $"Hi, {dto.Name}! You've been added as a reseller of {software.Name} on Deviar! You can access your reseller account <a href=\"https://licensing.deviar.net\">here</a>. <br /><br /><b>Email:</b> {dto.Email}<br /><b>Password:</b> {password}", dto.Email);
 
-                return Ok();
+                await context.SaveChangesAsync();
             }
 
-            return BadRequest(new
-            {
-                Message = resp.Errors.First().Description
-            });
+            return Ok();
         }
 
         [HttpPost]
@@ -221,6 +248,50 @@ namespace Licensing.Deviar.Controllers
             });
         }
 
+        [HttpPost("remove/reseller")]
+        public async Task<IActionResult> RemoveReseller([FromBody] ResellerDto dto)
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+
+            var reseller = await context.Resellers.FirstOrDefaultAsync(x => x.Id == dto.Id);
+
+            var software = await context.ResellerSoftware.FirstOrDefaultAsync(x => x.SoftwareId == dto.SoftwareId && x.ResellerId == reseller.Id);
+
+            context.ResellerSoftware.Remove(software);
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpGet("resellers/{id}")]
+        public async Task<IActionResult> GetResellers(int id)
+        {
+            var user = await userManager.GetUserAsync(HttpContext.User).ConfigureAwait(false);
+            var software = await context.Software
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Include(x => x.Resellers)
+                .ThenInclude(x => x.Reseller)
+                .ThenInclude(reseller => reseller.Logs)
+                .ThenInclude(resellerLog => resellerLog.LicenseKey)
+                .FirstOrDefaultAsync(x => x.UserId == user!.Id && x.Id == id);
+
+            var resellers = software!.Resellers.Select(x => new ResellerDto
+            {
+                Id = x.ResellerId,
+                Name = x.Reseller.Name,
+                Email = x.Reseller.Email,
+                Code = x.Reseller.Code,
+                UnitsSold = x.Reseller.Logs.Count(y => y.LicenseKey.SoftwareId == x.SoftwareId),
+                SoftwareId = x.SoftwareId,
+                Added = x.Reseller.Added,
+                Percentage = x.Reseller.Percentage
+            });
+
+            return Ok(resellers);
+        }
+
+
         [HttpGet]
         [Route("list")]
         public async Task<IActionResult> GetSoftware()
@@ -233,6 +304,7 @@ namespace Licensing.Deviar.Controllers
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
+                Resellers = x.Resellers.Count(),
                 Licenses = x.LicenseKeys.Count(),
                 CreatedOn = x.CreatedOn,
                 Version = x.Version,

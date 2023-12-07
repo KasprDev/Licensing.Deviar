@@ -14,7 +14,8 @@ namespace Licensing.Deviar.Data
         public decimal Percentage { get; set; }
         public int SoftwareId { get; set; }
         public DateTime Added { get; set; }
-        public virtual Software Software { get; set; }
+        public virtual ICollection<ResellerSoftware> Software { get; set; }
+        public virtual AppUser User { get; set; }
         public virtual ICollection<ResellerLog> Logs { get; set; }
     }
 }

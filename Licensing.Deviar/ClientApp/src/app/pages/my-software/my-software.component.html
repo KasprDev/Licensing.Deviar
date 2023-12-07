@@ -9,6 +9,7 @@
       <th>Name</th>
       <th>Description</th>
       <th>License Keys</th>
+      <th>Resellers</th>
       <th>Action</th>
     </tr>
   </thead>
@@ -17,6 +18,7 @@
       <td style="cursor: pointer;" [routerLink]="'/software/' + data.id">{{data.name}}</td>
       <td style="cursor: pointer;" [routerLink]="'/software/' + data.id">{{data.description}}</td>
       <td style="cursor: pointer;" [routerLink]="'/software/' + data.id">{{data.licenses}}</td>
+      <td>{{data.resellers}} <a [routerLink]="'/resellers/' + data.id" *ngIf="data.resellers > 0">View</a></td>
       <td>
         <a (click)="selectSoftware(data)">Create License</a>
         <nz-divider nzType="vertical"></nz-divider>

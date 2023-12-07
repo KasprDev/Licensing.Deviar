@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { ApiService } from 'src/services/api.service';
 
@@ -22,9 +23,12 @@ export class MySoftwareComponent implements OnInit {
 
   public adding: boolean;
 
-  constructor(private api: ApiService, private modal: NzModalService) { }
+  constructor(private api: ApiService, private modal: NzModalService, private router: Router) { }
 
   async ngOnInit() {
+    if (localStorage.getItem('reseller'))
+      this.router.navigate(['/resell']);
+    
     this.software = await this.api.getSoftwareList();
   }
 

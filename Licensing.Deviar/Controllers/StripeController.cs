@@ -1,4 +1,5 @@
 ﻿using Licensing.Deviar.Data;
+using Licensing.Deviar.Helpers;
 using Licensing.Deviar.Models;
 using Licensing.Deviar.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -73,7 +74,7 @@ namespace Licensing.Deviar.Controllers
 		        // The Software ID isn't present in the Stripe response.
 		        if (!data.Metadata.TryGetValue("SoftwareId", out var value)) return BadRequest("Software Id not in the metadata.");
 
-		        var software = await context.Software.FirstOrDefaultAsync(x => x.Id == Convert.ToInt32(value));
+                var software = await context.Software.FirstOrDefaultAsync(x => x.Id == Convert.ToInt32(value));
 
 		        if (software == null)
 			        return BadRequest("Unable to find the specified Software ID.");
@@ -93,7 +94,36 @@ namespace Licensing.Deviar.Controllers
 		        context.LicenseKeys.Add(key);
 		        await context.SaveChangesAsync().ConfigureAwait(false);
 
-		        await mailService.Send($"Your License Key for {software.Name}.",
+                if (data.Metadata.TryGetValue("Reseller", out var resellerCode))
+                {
+                    var reseller = await context.Resellers.FirstOrDefaultAsync(x => x.Code == resellerCode);
+
+                    if (reseller == null)
+                        return BadRequest(new
+                        {
+                            Message = "Invalid reseller."
+                        });
+
+                    var price = StripeHelper.GetProductPrice(software.StripeProductId!);
+
+                    var log = new ResellerLog
+                    {
+                        ResellerId = reseller.Id,
+                        LicenseKeyId = key.Id,
+                        Amount = CalculateCommission(price, reseller.Percentage)
+                    };
+
+                    context.ResellerLogs.Add(log);
+                    await context.SaveChangesAsync().ConfigureAwait(false);
+
+                    await mailService.Send($"Commission payment received!",
+                        $"Hi, {reseller.Name}! You've just received ${log.Amount.ToString("0.00")} as your part on a recent sale of {software.Name}! Message us to redeem your payout. Thank you!", reseller.Email);
+
+                    await mailService.Send($"{reseller.Name} just sold {software.Name}!",
+                        $"{reseller.Name} is supposed to receive ${log.Amount.ToString("0.00")} as part of a recent sale of {software.Name}!", "contact@deviar.net");
+                }
+
+                await mailService.Send($"Your License Key for {software.Name}.",
 			        $"Hi there! Your license key is <b>{key.Key}</b>", data.CustomerDetails.Email);
 
 		        return Ok();
@@ -109,5 +139,11 @@ namespace Licensing.Deviar.Controllers
 		        return StatusCode(500, $"Internal server error: {ex.Message}");
 	        }
 		}
+
+        static decimal CalculateCommission(decimal paymentAmount, decimal commissionRate)
+        {
+            decimal commissionAmount = paymentAmount * (commissionRate / 100);
+            return commissionAmount;
+        }
     }
 }

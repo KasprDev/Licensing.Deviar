@@ -1,0 +1,27 @@
+<h2>Resellers</h2>
+<nz-divider></nz-divider>
+
+<nz-table #resellersTable [nzData]="[0]" class="table-container">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Percentage Cut</th>
+        <th>Code</th>
+        <th>Units Sold</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of resellers">
+        <td>{{data.name}}</td>
+        <td>{{data.email}}</td>
+        <td>{{data.percentage }}%</td>
+        <td>{{data.code}}</td>
+        <td>{{data.unitsSold}}</td>
+        <td>
+          <a style="color: red;" (click)="deleteReseller(data)">Delete</a>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>

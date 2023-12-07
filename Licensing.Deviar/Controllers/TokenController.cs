@@ -71,7 +71,7 @@ namespace Licensing.Deviar.Controllers
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expires = token.ValidTo,
-                Reseller = matchingUser.Reseller
+                Reseller = matchingUser.ResellerId != null
             });
         }
     }
